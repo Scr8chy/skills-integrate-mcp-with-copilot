@@ -22,6 +22,55 @@ header {
   background-color: #1a237e;
   color: white;
   border-radius: 5px;
+  position: relative;
+}
+
+.login-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: transparent;
+  border: 2px solid white;
+  padding: 8px 16px;
+}
+
+.login-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.modal-content h3 {
+  margin-bottom: 20px;
+  color: #1a237e;
+}
+
+.close-btn {
+  background-color: #666;
+  margin-left: 10px;
+}
+
+.close-btn:hover {
+  background-color: #888;
 }
 
 header h1 {

@@ -5,10 +5,12 @@ A super simple FastAPI application that allows students to view and sign up
 for extracurricular activities at Mergington High School.
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import os
+import json
 from pathlib import Path
 
 app = FastAPI(title="Mergington High School API",
@@ -18,6 +20,22 @@ app = FastAPI(title="Mergington High School API",
 current_dir = Path(__file__).parent
 app.mount("/static", StaticFiles(directory=os.path.join(Path(__file__).parent,
           "static")), name="static")
+
+# Load teacher credentials
+with open(os.path.join(current_dir, "teachers.json")) as f:
+    teacher_credentials = json.load(f)["teachers"]
+
+security = HTTPBasic()
+
+def verify_teacher(credentials: HTTPBasicCredentials = Depends(security)):
+    for teacher in teacher_credentials:
+        if credentials.username == teacher["username"] and credentials.password == teacher["password"]:
+            return True
+    raise HTTPException(
+        status_code=401,
+        detail="Invalid credentials",
+        headers={"WWW-Authenticate": "Basic"},
+    )
 
 # In-memory activity database
 activities = {
@@ -111,7 +129,7 @@ def signup_for_activity(activity_name: str, email: str):
 
 
 @app.delete("/activities/{activity_name}/unregister")
-def unregister_from_activity(activity_name: str, email: str):
+def unregister_from_activity(activity_name: str, email: str, authenticated: bool = Depends(verify_teacher)):
     """Unregister a student from an activity"""
     # Validate activity exists
     if activity_name not in activities:
